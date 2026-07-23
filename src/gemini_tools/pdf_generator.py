@@ -1,4 +1,6 @@
 import os
+import html
+import re
 from dotenv import load_dotenv
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -39,9 +41,10 @@ def create_local_pdf(filename: str, title: str, markdown_content: str) -> str:
         clean_line = line.strip()
         if not clean_line:
             continue
-        formatted_line = clean_line.replace('**', '<b>', 1)
-        while '**' in formatted_line:
-            formatted_line = formatted_line.replace('**', '</b>', 1)
+
+        # Escape XML-sensitive chars first, then convert balanced **bold** pairs.
+        escaped_line = html.escape(clean_line)
+        formatted_line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", escaped_line)
             
         story.append(Paragraph(formatted_line, body_style))
         story.append(Spacer(1, 4))
