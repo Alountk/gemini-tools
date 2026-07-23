@@ -4,9 +4,9 @@ from pypdf import PdfReader
 
 
 def extraer_texto_pdf(ruta_pdf: str) -> str:
-    """Extrae todo el texto seleccionable de un archivo PDF local."""
+    """Extract all selectable text from a local PDF file."""
     if not os.path.exists(ruta_pdf):
-        return f"❌ Error: El archivo '{ruta_pdf}' no existe."
+        return f"❌ Error: File '{ruta_pdf}' does not exist."
 
     try:
         reader = PdfReader(ruta_pdf)
@@ -14,32 +14,32 @@ def extraer_texto_pdf(ruta_pdf: str) -> str:
         texto_completo = []
 
         texto_completo.append(
-            f"--- Documento: {os.path.basename(ruta_pdf)} ({num_paginas} páginas) ---\n")
+            f"--- Document: {os.path.basename(ruta_pdf)} ({num_paginas} pages) ---\n")
 
         for i, pagina in enumerate(reader.pages):
             texto_pagina = pagina.extract_text()
             if texto_pagina:
-                texto_completo.append(f"--- Página {i + 1} ---")
+                texto_completo.append(f"--- Page {i + 1} ---")
                 texto_completo.append(texto_pagina.strip())
-                texto_completo.append("")  # Línea en blanco entre páginas
+                texto_completo.append("")  # Blank line between pages
 
         return "\n".join(texto_completo)
 
     except Exception as e:
-        return f"❌ Error al leer el archivo PDF: {str(e)}"
+        return f"❌ Error reading the PDF file: {str(e)}"
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Uso: gemini-read-pdf /ruta/al/archivo.pdf")
-        ruta = input("Introduce la ruta del PDF: ").strip()
+        print("Usage: gemini-read-pdf /path/to/file.pdf")
+        ruta = input("Enter the PDF path: ").strip()
     else:
         ruta = sys.argv[1]
 
-    # Eliminar comillas escapadas por la terminal si se arrastra el archivo
+    # Remove terminal-escaped quotes when the file is dragged into shell
     ruta = ruta.strip("'\"")
 
-    print("📖 Leyendo archivo localmente...")
+    print("📖 Reading local file...")
     resultado = extraer_texto_pdf(ruta)
     print("\n" + resultado)
 

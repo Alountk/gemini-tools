@@ -10,7 +10,7 @@ from gemini_tools.ai_provider import get_ai_provider
 load_dotenv()
 
 def crear_pdf_local(nombre_archivo: str, titulo: str, contenido_markdown: str) -> str:
-    """Crea y guarda un archivo PDF estilizado en el sistema de archivos local."""
+    """Create and save a styled PDF file on the local filesystem."""
     if not nombre_archivo.endswith('.pdf'):
         nombre_archivo += '.pdf'
         
@@ -47,18 +47,18 @@ def crear_pdf_local(nombre_archivo: str, titulo: str, contenido_markdown: str) -
         story.append(Spacer(1, 4))
         
     doc.build(story)
-    return f"PDF creado exitosamente en: {os.path.abspath(nombre_archivo)}"
+    return f"PDF created successfully at: {os.path.abspath(nombre_archivo)}"
 
 def procesar_peticion_pdf(prompt: str):
-    """Procesa la petición delegando en el proveedor de IA configurado."""
+    """Process the request using the configured AI provider."""
     try:
-        # Obtiene el proveedor (Gemini o Local según el .env)
+        # Get the provider (Gemini or Local based on .env)
         ai = get_ai_provider()
         
-        print("🤖 Procesando solicitud...")
-        # Se envían la solicitud y la herramienta de creación de PDF
+        print("🤖 Processing request...")
+        # Send the request and the PDF generation tool
         respuesta = ai.run_with_tools(prompt, tools=[crear_pdf_local])
-        print(f"\n✨ Resultado:\n{respuesta}")
+        print(f"\n✨ Result:\n{respuesta}")
         
     except Exception as e:
-        print(f"❌ Error al procesar la solicitud: {str(e)}")
+        print(f"❌ Error while processing the request: {str(e)}")

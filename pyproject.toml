@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gemini-tools"
 version = "0.1.0"
-description = "Herramientas de automatización usando la API de Gemini"
-authors = [{ name = "Tu Nombre" }]
+description = "Automation tools powered by the Gemini API"
+authors = [{ name = "Your Name" }]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
