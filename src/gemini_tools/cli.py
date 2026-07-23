@@ -1,5 +1,5 @@
 import sys
-from gemini_tools.pdf_generator import procesar_peticion_pdf
+from gemini_tools.pdf_generator import process_pdf_request
 
 def main():
     prompt_args = " ".join(sys.argv[1:])
@@ -20,7 +20,7 @@ def main():
         print("Usage: gemini-pdf \"Request\" or: gemini-read-pdf doc.pdf | gemini-pdf \"Request\"")
         return
 
-    procesar_peticion_pdf(prompt_final)
+    process_pdf_request(prompt_final)
 
 if __name__ == "__main__":
     main()

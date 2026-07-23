@@ -1,7 +1,7 @@
 import os
 import json
 from abc import ABC, abstractmethod
-from typing import List, Callable, Any
+from typing import List, Callable
 import google.generativeai as genai
 from openai import OpenAI
 
@@ -56,11 +56,11 @@ class LocalAIProvider(BaseAIProvider):
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "nombre_archivo": {"type": "string", "description": "PDF filename"},
-                            "titulo": {"type": "string", "description": "Main PDF title"},
-                            "contenido_markdown": {"type": "string", "description": "Markdown content"}
+                            "filename": {"type": "string", "description": "PDF filename"},
+                            "title": {"type": "string", "description": "Main PDF title"},
+                            "markdown_content": {"type": "string", "description": "Markdown content"}
                         },
-                        "required": ["nombre_archivo", "titulo", "contenido_markdown"]
+                        "required": ["filename", "title", "markdown_content"]
                     }
                 }
             })
@@ -86,8 +86,8 @@ class LocalAIProvider(BaseAIProvider):
                 
                 if func_name in tool_map:
                     # Actual execution of the local function (PDF creation)
-                    resultado = tool_map[func_name](**func_args)
-                    return f"🤖 [Local AI] {resultado}"
+                    result = tool_map[func_name](**func_args)
+                    return f"🤖 [Local AI] {result}"
 
         return response_message.content or "Processed without tool invocation."
 

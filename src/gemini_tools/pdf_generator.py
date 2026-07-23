@@ -9,13 +9,13 @@ from gemini_tools.ai_provider import get_ai_provider
 
 load_dotenv()
 
-def crear_pdf_local(nombre_archivo: str, titulo: str, contenido_markdown: str) -> str:
+def create_local_pdf(filename: str, title: str, markdown_content: str) -> str:
     """Create and save a styled PDF file on the local filesystem."""
-    if not nombre_archivo.endswith('.pdf'):
-        nombre_archivo += '.pdf'
+    if not filename.endswith('.pdf'):
+        filename += '.pdf'
         
     doc = SimpleDocTemplate(
-        nombre_archivo,
+        filename,
         pagesize=letter,
         rightMargin=40, leftMargin=40,
         topMargin=40, bottomMargin=40
@@ -33,32 +33,37 @@ def crear_pdf_local(nombre_archivo: str, titulo: str, contenido_markdown: str) -
         textColor=colors.HexColor('#202124'), spaceAfter=10
     )
     
-    story = [Paragraph(titulo, title_style), Spacer(1, 10)]
+    story = [Paragraph(title, title_style), Spacer(1, 10)]
     
-    for linea in contenido_markdown.split('\n'):
-        linea_limpia = linea.strip()
-        if not linea_limpia:
+    for line in markdown_content.split('\n'):
+        clean_line = line.strip()
+        if not clean_line:
             continue
-        linea_fmt = linea_limpia.replace('**', '<b>', 1)
-        while '**' in linea_fmt:
-            linea_fmt = linea_fmt.replace('**', '</b>', 1)
+        formatted_line = clean_line.replace('**', '<b>', 1)
+        while '**' in formatted_line:
+            formatted_line = formatted_line.replace('**', '</b>', 1)
             
-        story.append(Paragraph(linea_fmt, body_style))
+        story.append(Paragraph(formatted_line, body_style))
         story.append(Spacer(1, 4))
         
     doc.build(story)
-    return f"PDF created successfully at: {os.path.abspath(nombre_archivo)}"
+    return f"PDF created successfully at: {os.path.abspath(filename)}"
 
-def procesar_peticion_pdf(prompt: str):
+def process_pdf_request(prompt: str):
     """Process the request using the configured AI provider."""
     try:
         # Get the provider (Gemini or Local based on .env)
-        ai = get_ai_provider()
+        ai_provider = get_ai_provider()
         
         print("🤖 Processing request...")
         # Send the request and the PDF generation tool
-        respuesta = ai.run_with_tools(prompt, tools=[crear_pdf_local])
-        print(f"\n✨ Result:\n{respuesta}")
+        response = ai_provider.run_with_tools(prompt, tools=[create_local_pdf])
+        print(f"\n✨ Result:\n{response}")
         
     except Exception as e:
         print(f"❌ Error while processing the request: {str(e)}")
+
+
+# Backward-compatible aliases
+crear_pdf_local = create_local_pdf
+procesar_peticion_pdf = process_pdf_request

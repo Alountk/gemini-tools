@@ -10,7 +10,7 @@ Este proyecto expone el comando `gemini-pdf`, que:
 
 1. Toma un prompt desde la terminal.
 2. Envía la petición a Gemini (`gemini-2.5-flash`).
-3. Permite que el modelo invoque la función `crear_pdf_local(...)` para construir un PDF con ReportLab.
+3. Permite que el modelo invoque la función `create_local_pdf(...)` para construir un PDF con ReportLab.
 4. Muestra en consola la respuesta del modelo.
 
 ## Funcionalidades actuales
@@ -98,7 +98,7 @@ flowchart LR
     B --> C[Se configura GEMINI_API_KEY]
     C --> D[Gemini model: gemini-2.5-flash]
     D --> E[Automatic Function Calling]
-    E --> F[crear_pdf_local nombre titulo contenido]
+    E --> F[create_local_pdf filename title markdown_content]
     F --> G[PDF local generado]
     G --> H[Respuesta mostrada en consola]
 ```
@@ -124,7 +124,7 @@ README.es.md
 
 ## Limitaciones conocidas
 
-- La creación efectiva del PDF depende de que Gemini decida invocar la función `crear_pdf_local`.
+- La creación efectiva del PDF depende de que Gemini decida invocar la función `create_local_pdf`.
 - El formateo tipo Markdown es básico (conversión parcial de `**negrita**`), no es un parser completo.
 - Actualmente no hay pruebas automatizadas incluidas.
 
