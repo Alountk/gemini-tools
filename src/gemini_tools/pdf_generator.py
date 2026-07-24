@@ -8,6 +8,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 
 from gemini_tools.ai_provider import get_ai_provider
+from gemini_tools.docx_generator import generate_cv_document
 
 load_dotenv()
 
@@ -57,16 +58,11 @@ def process_pdf_request(prompt: str):
     try:
         # Get the provider (Gemini or Local based on .env)
         ai_provider = get_ai_provider()
-        
         print("🤖 Processing request...")
+        
         # Send the request and the PDF generation tool
-        response = ai_provider.run_with_tools(prompt, tools=[create_local_pdf])
+        response = ai_provider.run_with_tools(prompt, tools=[generate_cv_document])
         print(f"\n✨ Result:\n{response}")
         
     except Exception as e:
         print(f"❌ Error while processing the request: {str(e)}")
-
-
-# Backward-compatible aliases
-crear_pdf_local = create_local_pdf
-procesar_peticion_pdf = process_pdf_request
