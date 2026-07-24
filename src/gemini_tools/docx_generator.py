@@ -41,10 +41,16 @@ def section_header(doc, text: str):
     return p
 
 def bullet(doc, text: str):
-    """Adds a bullet list item."""
+    """Adds a bullet list item with proper left indentation."""
     p = doc.add_paragraph(style='List Bullet')
     p.paragraph_format.space_before = Pt(2) # ~40 dxa
     p.paragraph_format.space_after = Pt(2)  # ~40 dxa
+    
+    # --- INDENTATION ADJUSTMENT ---
+    # left_indent: Espacio total desde el margen izquierdo hasta el texto (~0.25 in / ~360 dxa)
+    # first_line_indent: Posición del bullet respecto al texto (-0.15 in / ~216 dxa)
+    p.paragraph_format.left_indent = Inches(0.25)
+    p.paragraph_format.first_line_indent = Inches(-0.15)
     
     run = p.add_run(text)
     run.font.name = "Arial"
