@@ -3,7 +3,6 @@ import subprocess
 from docx import Document
 from docx.shared import Pt, RGBColor, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
-from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
@@ -26,6 +25,45 @@ def set_paragraph_bottom_border(paragraph, color_hex=LINE_COLOR_HEX, size="6"):
     pBdr.append(bottom)
     pPr.append(pBdr)
 
+def apply_default_margins(doc):
+    """Apply uniform margins to the entire document."""
+    for section in doc.sections:
+        section.top_margin = Inches(0.5)
+        section.bottom_margin = Inches(0.5)
+        section.left_margin = Inches(0.6)
+        section.right_margin = Inches(0.6)
+
+# --- COMPONENTES ATÓMICOS REUTILIZABLES ---
+
+def add_main_title(doc, text: str, subtitle: str = "", contact_or_meta: str = ""):
+    """Standard main header for any document."""
+    p_title = doc.add_paragraph()
+    p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_title.paragraph_format.space_after = Pt(2)
+    r_title = p_title.add_run(text.upper())
+    r_title.bold = True
+    r_title.font.name = "Arial"
+    r_title.font.size = Pt(18)
+    r_title.font.color.rgb = BLUE
+
+    if subtitle:
+        p_sub = doc.add_paragraph()
+        p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_sub.paragraph_format.space_after = Pt(4)
+        r_sub = p_sub.add_run(subtitle)
+        r_sub.font.name = "Arial"
+        r_sub.font.size = Pt(11)
+        r_sub.font.color.rgb = LIGHT_BLUE
+
+    if contact_or_meta:
+        p_meta = doc.add_paragraph()
+        p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_meta.paragraph_format.space_after = Pt(12)
+        r_meta = p_meta.add_run(contact_or_meta)
+        r_meta.font.name = "Arial"
+        r_meta.font.size = Pt(9)
+        r_meta.font.color.rgb = GRAY
+
 def section_header(doc, text: str):
     """Generates a section header with an underline border."""
     p = doc.add_paragraph()
@@ -38,6 +76,25 @@ def section_header(doc, text: str):
     run.font.name = "Arial"
     run.font.size = Pt(13) # ~26 pt in docx.js
     run.font.color.rgb = BLUE
+    return p
+
+def add_paragraph_body(doc, text: str, bold_prefix: str = ""):
+    """Adds a standardized body text paragraph."""
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(3)
+    p.paragraph_format.space_after = Pt(4)
+    
+    if bold_prefix:
+        r_pre = p.add_run(bold_prefix)
+        r_pre.bold = True
+        r_pre.font.name = "Arial"
+        r_pre.font.size = Pt(10)
+        r_pre.font.color.rgb = BLUE
+        
+    run = p.add_run(text)
+    run.font.name = "Arial"
+    run.font.size = Pt(10)
+    run.font.color.rgb = GRAY
     return p
 
 def bullet(doc, text: str):
@@ -115,6 +172,50 @@ def competencia(doc, title: str, description: str):
     r_d.font.name = "Arial"
     r_d.font.size = Pt(10)
     r_d.font.color.rgb = GRAY
+
+# --- TEMPLATE 1: GENERIC DOCUMENT / REPORT (Default) ---
+def generate_default_document(
+    output_filename: str,
+    title: str,
+    subtitle: str = "",
+    meta_info: str = "",
+    sections: list[dict] = None
+) -> str:
+    """
+    Generates a generic document/report (technical report, summary, note) with the corporate design.
+    
+    Args:
+        output_filename: Name of the output file.
+        title: Main title of the document.
+        subtitle: Optional subtitle.
+        meta_info: Header information (date, author, version).
+        sections: List of sections with 'title', 'paragraphs' (list of text) and 'bullets' (list of points).
+    """
+    if not output_filename.endswith('.docx'):
+        output_filename = f"{output_filename.rsplit('.', 1)[0]}.docx"
+
+    doc = Document()
+    apply_default_margins(doc)
+
+    # Cabecera
+    add_main_title(doc, title, subtitle, meta_info)
+
+    # Contenido dinámico
+    if sections:
+        for sec in sections:
+            sec_title = sec.get("title", "")
+            if sec_title:
+                section_header(doc, sec_title)
+            
+            for p_text in sec.get("paragraphs", []):
+                add_paragraph_body(doc, p_text)
+                
+            for b_text in sec.get("bullets", []):
+                bullet(doc, b_text)
+
+    doc.save(output_filename)
+    final_path = convert_docx_to_pdf(output_filename)
+    return f"Generic document created successfully at: {os.path.abspath(final_path)}"
 
 def generate_cv_document(
     output_filename: str,
